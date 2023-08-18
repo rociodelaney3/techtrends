@@ -37,3 +37,4 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: rociodelaney/techtrends:latest
+
