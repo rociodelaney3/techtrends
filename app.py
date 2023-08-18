@@ -70,7 +70,7 @@ def create():
                          (title, content))
             connection.commit()
             connection.close()
-            app.logger.info(f'Article "{title}" was created')
+            app.logger.info(f'New Article "{title}" was created')
             return redirect(url_for('index'))
 
     return render_template('create.html')
@@ -89,15 +89,14 @@ def status():
 @app.route('/metrics')
 def metrics():
     connection = get_db_connection()
-    post_count = connection.execute('SELECT count(1) from posts').fetchone()[0]
-    return app.response_class(
-        response=json.dumps({
-            'post_count': post_count,
-            'db_connection_count': connection_counter
-        }),
+    posts_count = connection.execute('SELECT COUNT(*) FROM posts').fetchone()[0]
+    connection.close()
+    response = app.response_class(
+        response=json.dumps({"db_connection_count":connections_count,"post_count":posts_count}),
         status=200,
-        mimetype='application/json'
-    )
+        mimetype='application/json')
+    app.logger.info('Metrics request successful')
+    return response
 
 
 # start the application on port 3111
